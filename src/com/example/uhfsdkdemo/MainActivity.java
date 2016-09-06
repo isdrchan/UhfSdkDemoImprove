@@ -12,6 +12,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.PixelFormat;
+import android.hardware.Camera;
+import android.hardware.Camera.PictureCallback;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -27,6 +30,10 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.Surface;  
+import android.view.SurfaceHolder;  
+import android.view.SurfaceHolder.Callback;  
+import android.view.SurfaceView; 
 
 import com.android.hdhe.uhf.reader.NewSendCommendManager;
 import com.android.hdhe.uhf.reader.Tools;
@@ -37,6 +44,8 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 	private Button buttonClear;
 	private Button buttonConnect;
 	private Button buttonStart;
+	private Button btnTakePicture;
+	private SurfaceView surfaceView; //相机控件
 	private TextView textVersion ;
 	private ListView listViewData;
 	private ArrayList<EPC> listEPC;
@@ -44,7 +53,11 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 	private boolean runFlag = true;
 	private boolean startFlag = false;
 	private boolean connectFlag = false;
+	private Camera camera; 
+	private Camera.Parameters parameters = null;  
 	private UhfReader reader ; //超高频读写器 
+	private Bundle bundle = null; // 声明一个Bundle对象，用来存储数据  
+	private boolean takePictureFlag = false;
 	
 	private ScreenStateReceiver screenReceiver ;
 	@Override
@@ -82,10 +95,19 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 		filter.addAction(Intent.ACTION_SCREEN_OFF);
 		registerReceiver(screenReceiver, filter);
 		
+		//打开相机
+		SurfaceView surfaceView = (SurfaceView) this  
+                .findViewById(R.id.surfaceView);  
+        surfaceView.getHolder()  
+                .setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);  
+        surfaceView.getHolder().setFixedSize(176, 144); //设置Surface分辨率  
+        surfaceView.getHolder().setKeepScreenOn(true);// 屏幕常亮  
+        surfaceView.getHolder().addCallback(new SurfaceCallback());//为SurfaceView的句柄添加一个回调函数  
+		
 		/**************************/
 		
 //		String serialNum = "";
-//        try {
+//        try {.
 //            Class<?> classZ = Class.forName("android.os.SystemProperties");
 //            Method get = classZ.getMethod("get", String.class);
 //            serialNum = (String) get.invoke(classZ, "ro.serialno");
@@ -108,15 +130,16 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 		buttonClear = (Button) findViewById(R.id.button_clear);
 		listViewData = (ListView) findViewById(R.id.listView_data);
 		textVersion = (TextView) findViewById(R.id.textView_version);
+		surfaceView = (SurfaceView) findViewById(R.id.surfaceView);  
+		btnTakePicture = (Button) findViewById(R.id.btn_take_picture);
 		buttonStart.setOnClickListener(this);
 		buttonConnect.setOnClickListener(this);
 		buttonClear.setOnClickListener(this);
+		btnTakePicture.setOnClickListener(this);
 		setButtonClickable(buttonStart, false);
 		listEPC = new ArrayList<EPC>();
 		listViewData.setOnItemClickListener(this);
-		
 	}
-	
 	
 	@Override
 	protected void onPause() {
@@ -206,7 +229,7 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 				}
 			});
 		}
-
+		
 	//设置按钮是否可用
 	private void setButtonClickable(Button button, boolean flag){
 		button.setClickable(flag);
@@ -291,6 +314,14 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 			
 			clearData();
 			break;
+		case R.id.btn_take_picture:
+			if (!takePictureFlag) {
+				camera.takePicture(null, null, new MyPictureCallback());
+				btnTakePicture.setText("重拍");
+			} else {
+				camera.startPreview(); // 重新开始预览  
+				btnTakePicture.setText("拍照");
+			}
 		default:
 			break;
 		}
@@ -363,4 +394,84 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 			e.printStackTrace();
 		}
 	}
+	
+	private final class SurfaceCallback implements Callback {  
+		  
+        // 拍照状态变化时调用该方法  
+        @Override  
+        public void surfaceChanged(SurfaceHolder holder, int format, int width,  
+                int height) {  
+            parameters = camera.getParameters(); // 获取各项参数  
+            parameters.setPictureFormat(PixelFormat.JPEG); // 设置图片格式  
+            parameters.setPreviewSize(width, height); // 设置预览大小  
+            parameters.setPreviewFrameRate(5);  //设置每秒显示4帧  
+            parameters.setPictureSize(width, height); // 设置保存的图片尺寸  
+            parameters.setJpegQuality(80); // 设置照片质量  
+        }  
+  
+        // 开始拍照时调用该方法  
+        @Override  
+        public void surfaceCreated(SurfaceHolder holder) {  
+            try {  
+                camera = Camera.open(); // 打开摄像头  
+                camera.setPreviewDisplay(holder); // 设置用于显示拍照影像的SurfaceHolder对象  
+                camera.setDisplayOrientation(getPreviewDegree(MainActivity.this));  
+                camera.startPreview(); // 开始预览  
+            } catch (Exception e) {  
+                e.printStackTrace();  
+            }  
+  
+        }  
+  
+        // 停止拍照时调用该方法  
+        @Override  
+        public void surfaceDestroyed(SurfaceHolder holder) {  
+            if (camera != null) {  
+                camera.release(); // 释放照相机  
+                camera = null;  
+            }  
+        }  
+    }  
+	
+    private final class MyPictureCallback implements PictureCallback {  
+    	  
+        @Override  
+        public void onPictureTaken(byte[] data, Camera camera) {  
+            try {  
+                bundle = new Bundle();  
+                bundle.putByteArray("bytes", data); //将图片字节数据保存在bundle当中，实现数据交换  
+//                saveToSDCard(data); // 保存图片到sd卡中  
+                Toast.makeText(getApplicationContext(), "成功",  
+                        Toast.LENGTH_SHORT).show();  
+//                camera.startPreview(); // 拍完照后，重新开始预览  
+  
+            } catch (Exception e) {  
+                e.printStackTrace();  
+            }  
+        }  
+    }  
+	
+	// 提供一个静态方法，用于根据手机方向获得相机预览画面旋转的角度  
+    public static int getPreviewDegree(Activity activity) {  
+        // 获得手机的方向  
+        int rotation = activity.getWindowManager().getDefaultDisplay()  
+                .getRotation();  
+        int degree = 0;  
+        // 根据手机的方向计算相机预览画面应该选择的角度  
+        switch (rotation) {  
+        case Surface.ROTATION_0:  
+            degree = 90;  
+            break;  
+        case Surface.ROTATION_90:  
+            degree = 0;  
+            break;  
+        case Surface.ROTATION_180:  
+            degree = 270;  
+            break;  
+        case Surface.ROTATION_270:  
+            degree = 180;  
+            break;  
+        }  
+        return degree;  
+    }  
 }

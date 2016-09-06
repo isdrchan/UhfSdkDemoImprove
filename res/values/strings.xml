@@ -8,7 +8,7 @@
 	<string name="id">ID</string>
 	<string name="count">count</string>
 	<string name="inventory">Start Inventory</string>
-		<string name="stop_inventory">Stop Inventory</string>
+	<string name="stop_inventory">Stop Inventory</string>
 	<string name="clear">clear</string>
 	<string name="membank">Membank</string>
 	<string name="accesspassword">Access Password</string>

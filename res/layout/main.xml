@@ -19,12 +19,24 @@
             android:layout_height="wrap_content"
             />
     </LinearLayout>
+    <LinearLayout 
+        android:id="@+id/llayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/linearlayout0"
+        android:orientation="vertical" >
+        <!-- 显示预览图形 -->  
+        <SurfaceView   
+        android:id="@+id/surfaceView"  
+        android:layout_width="match_parent"  
+        android:layout_height="150dp"  />  
+    </LinearLayout>
 	<LinearLayout 
 	     android:id="@+id/receive_txt"
      	 android:layout_width="match_parent"
      	 android:layout_height="wrap_content"
      	 android:orientation="horizontal"
-     	 android:layout_below="@+id/linearlayout0"
+     	 android:layout_below="@+id/llayout"
      	 android:layout_marginLeft="10dp"
      	 android:layout_marginTop="10dp"
 	    >
@@ -84,7 +96,7 @@
             android:id="@+id/button_start"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
+            android:layout_weight="1.5"
             android:text="@string/inventory" />
 
         <Button
@@ -93,6 +105,20 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/clear" />
+        
+        <Button
+            android:id="@+id/btn_take_picture"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="拍照" />
+        
+        <Button
+            android:id="@+id/btn_upload"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="上传" />
     </LinearLayout>
 
 
