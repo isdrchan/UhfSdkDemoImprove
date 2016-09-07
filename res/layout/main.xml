@@ -29,7 +29,7 @@
         <SurfaceView   
         android:id="@+id/surfaceView"  
         android:layout_width="match_parent"  
-        android:layout_height="150dp"  />  
+        android:layout_height="200dp"  />  
     </LinearLayout>
 	<LinearLayout 
 	     android:id="@+id/receive_txt"
@@ -68,7 +68,7 @@
      	 android:layout_height="wrap_content"
      	 android:layout_weight="1"
      	 android:gravity="center"
-    	 android:text=""
+    	 android:text="选择"
     	 android:textSize="18sp" />
 	</LinearLayout>
      

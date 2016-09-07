@@ -5,6 +5,14 @@ public class EPC {
 	private String epc;
 	private int count;
 	
+	public EPC() {}
+	
+	public EPC(int id, String epc, int count) {
+		this.id = id;
+		this.epc = epc;
+		this.count = count;
+	}
+	
 	/**
 	 * @return the id
 	 */
