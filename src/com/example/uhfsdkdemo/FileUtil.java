@@ -8,7 +8,7 @@ import java.util.Date;
 
 import android.content.Context;
 
-public class FileHandle {
+public class FileUtil {
 	
 	/** 
      * 将拍下来的照片存放在Cache中 ,返回文件路径

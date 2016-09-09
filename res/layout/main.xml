@@ -8,9 +8,9 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         >
+        <!--  style="?android:attr/buttonStyleSmall"-->
         <Button 
             android:id="@+id/button_connect"
-            style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/connect"/>
@@ -19,24 +19,12 @@
             android:layout_height="wrap_content"
             />
     </LinearLayout>
-    <LinearLayout 
-        android:id="@+id/llayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/linearlayout0"
-        android:orientation="vertical" >
-        <!-- 显示预览图形 -->  
-        <SurfaceView   
-        android:id="@+id/surfaceView"  
-        android:layout_width="match_parent"  
-        android:layout_height="200dp"  />  
-    </LinearLayout>
 	<LinearLayout 
 	     android:id="@+id/receive_txt"
      	 android:layout_width="match_parent"
      	 android:layout_height="wrap_content"
      	 android:orientation="horizontal"
-     	 android:layout_below="@+id/llayout"
+     	 android:layout_below="@+id/linearlayout0"
      	 android:layout_marginLeft="10dp"
      	 android:layout_marginTop="10dp"
 	    >
@@ -107,18 +95,12 @@
             android:text="@string/clear" />
         
         <Button
-            android:id="@+id/btn_take_picture"
+            android:id="@+id/btn_next_main"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="拍照" />
-        
-        <Button
-            android:id="@+id/btn_upload"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="上传" />
+            android:text="下一步" />
+
     </LinearLayout>
 
 

@@ -32,7 +32,7 @@
        <activity android:name="com.example.uhfsdkdemo.SettingActivity"  android:launchMode="singleTask" ></activity>
         <activity android:name="com.example.uhfsdkdemo.MoreHandleActivity"   android:launchMode="singleTask" />
     	<activity android:name="com.example.uhfsdkdemo.SettingPower"   android:launchMode="singleTask" />
-    	
+    	<activity android:name="CameraActivity"></activity>
     </application>
 
 </manifest>

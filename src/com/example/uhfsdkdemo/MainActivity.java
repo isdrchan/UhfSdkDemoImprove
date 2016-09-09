@@ -1,36 +1,24 @@
 package com.example.uhfsdkdemo;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.PixelFormat;
-import android.hardware.Camera;
-import android.hardware.Camera.AutoFocusCallback;
-import android.hardware.Camera.PictureCallback;
-import android.hardware.Camera.Size;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.View.OnClickListener;
+import android.view.ViewConfiguration;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -39,12 +27,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.view.Surface;  
-import android.view.SurfaceHolder;  
-import android.view.SurfaceHolder.Callback;  
-import android.view.SurfaceView; 
 
-import com.android.hdhe.uhf.reader.NewSendCommendManager;
 import com.android.hdhe.uhf.reader.Tools;
 import com.android.hdhe.uhf.reader.UhfReader;
 
@@ -53,8 +36,7 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 	private Button buttonClear;
 	private Button buttonConnect;
 	private Button buttonStart;
-	private Button btnTakePicture;
-	private SurfaceView surfaceView; //相机控件
+	private Button btnNext;
 	private TextView textVersion ;
 	private ListView listViewData;
 	private ArrayList<EPC> listEPC;
@@ -62,14 +44,8 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 	private boolean runFlag = true;
 	private boolean startFlag = false;
 	private boolean connectFlag = false;
-	private Camera camera; 
-	private Camera.Parameters parameters = null;  
 	private UhfReader reader ; //超高频读写器 
-	private Bundle bundle = null; // 声明一个Bundle对象，用来存储数据  
-	private boolean takePictureFlag = false;	//Camera.startPreview()之后，拍照Camera.takePicture()之前标记为flase
-	private AutoFocusCallback myAutoFocusCallback = null;	//自动变焦回调
 	private ScreenStateReceiver screenReceiver;
-	private String picPath;
 	private static final String TAG = "cyn";
 	
 	@Override
@@ -106,36 +82,7 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 		filter.addAction(Intent.ACTION_SCREEN_ON);
 		filter.addAction(Intent.ACTION_SCREEN_OFF);
 		registerReceiver(screenReceiver, filter);
-		
-		//定义自动变焦回调
-		myAutoFocusCallback = new AutoFocusCallback() {
-            
-            public void onAutoFocus(boolean success, Camera camera) {
-                // TODO Auto-generated method stub
-                if(success) {	//success表示对焦成功
-                	Log.i(TAG, "myAutoFocusCallback: success...");
-                    //myCamera.setOneShotPreviewCallback(null);
-                }
-                else {
-                    //未对焦成功
-                    Log.i(TAG, "myAutoFocusCallback: 失败了...");
-                }               
-            }
-        };
-        
-		//点击surface对焦
-		surfaceView.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if(!takePictureFlag) {
-					camera.autoFocus(myAutoFocusCallback);
-					Toast.makeText(getApplicationContext(), "对焦中",  
-	                        Toast.LENGTH_SHORT).show(); 
-				}
-			}
-		});
-      		
+		      		
 		/**************************/
 		
 //		String serialNum = "";
@@ -154,17 +101,6 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 		thread.start();
 		//初始化声音池
 		Util.initSoundPool(this);
-		
-		//打开相机
-		SurfaceView surfaceView = (SurfaceView) this  
-	            .findViewById(R.id.surfaceView);  
-	    surfaceView.getHolder()  
-	            .setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);  
-	    surfaceView.getHolder().setFixedSize(1280, 720); //设置Surface分辨率  
-	    surfaceView.getHolder().setKeepScreenOn(true);// 屏幕常亮  
-	    surfaceView.getHolder().addCallback(new SurfaceCallback());//为SurfaceView的句柄添加一个回调函数\
-	    
-	    FileHandle.DeleteFolder(getCacheDir().getAbsolutePath() + "/pic"); //清除图片缓存
 		        
 		//假数据
 	    List<EPC> list = new ArrayList<EPC>();
@@ -176,14 +112,13 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 		buttonStart = (Button) findViewById(R.id.button_start);
 		buttonConnect = (Button) findViewById(R.id.button_connect);
 		buttonClear = (Button) findViewById(R.id.button_clear);
+		btnNext = (Button) findViewById(R.id.btn_next_main);
 		listViewData = (ListView) findViewById(R.id.listView_data);
 		textVersion = (TextView) findViewById(R.id.textView_version);
-		surfaceView = (SurfaceView) findViewById(R.id.surfaceView);  
-		btnTakePicture = (Button) findViewById(R.id.btn_take_picture);
 		buttonStart.setOnClickListener(this);
 		buttonConnect.setOnClickListener(this);
 		buttonClear.setOnClickListener(this);
-		btnTakePicture.setOnClickListener(this);
+		btnNext.setOnClickListener(this);
 		setButtonClickable(buttonStart, false);
 		listEPC = new ArrayList<EPC>();
 		listViewData.setOnItemClickListener(this);
@@ -231,52 +166,53 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 	}
 	
 	//将读取的EPC添加到LISTVIEW
-		private void addToList(final List<EPC> list, final String epc){
-			runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					
-					//第一次读入数据
-					if(list.isEmpty()){
-						EPC epcTag = new EPC();
-						epcTag.setEpc(epc);
-						epcTag.setCount(1);
-						list.add(epcTag);
-					}else{
-						for(int i = 0; i < list.size(); i++){
-							EPC mEPC = list.get(i);
-							//list中有此EPC
-							if(epc.equals(mEPC.getEpc())){
-							mEPC.setCount(mEPC.getCount() + 1);
-							list.set(i, mEPC);
-							break;
-						}else if(i == (list.size() - 1)){
-							//list中没有此epc
-							EPC newEPC = new EPC();
-							newEPC.setEpc(epc);
-							newEPC.setCount(1);
-							list.add(newEPC);
-							}
+	private void addToList(final List<EPC> list, final String epc){
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				
+				//第一次读入数据
+				if(list.isEmpty()){
+					EPC epcTag = new EPC();
+					epcTag.setEpc(epc);
+					epcTag.setCount(1);
+					list.add(epcTag);
+				}else{
+					for(int i = 0; i < list.size(); i++){
+						EPC mEPC = list.get(i);
+						//list中有此EPC
+						if(epc.equals(mEPC.getEpc())){
+						mEPC.setCount(mEPC.getCount() + 1);
+						list.set(i, mEPC);
+						break;
+					}else if(i == (list.size() - 1)){
+						//list中没有此epc
+						EPC newEPC = new EPC();
+						newEPC.setEpc(epc);
+						newEPC.setCount(1);
+						list.add(newEPC);
 						}
 					}
-					//将数据添加到ListView
-					listMap = new ArrayList<Map<String,Object>>();
-					int idcount = 1;
-					for(EPC epcdata:list){
-						Map<String, Object> map = new HashMap<String, Object>();
-						map.put("ID", idcount);
-						map.put("EPC", epcdata.getEpc());
-						map.put("COUNT", epcdata.getCount());
-						idcount++;
-						listMap.add(map);
-					}
-					listViewData.setAdapter(new SimpleAdapter(MainActivity.this,
-							listMap, R.layout.listview_item, 
-							new String[]{"ID", "EPC", "COUNT"}, 
-							new int[]{R.id.textView_id, R.id.textView_epc, R.id.textView_count}));
 				}
-			});
-		}
+				//将数据添加到ListView
+				listMap = new ArrayList<Map<String,Object>>();
+				int idcount = 1;
+				for(EPC epcdata:list){
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("ID", idcount);
+					map.put("EPC", epcdata.getEpc());
+					map.put("COUNT", epcdata.getCount());
+					idcount++;
+					listMap.add(map);
+				}
+				listViewData.setAdapter(
+						new SimpleAdapter(MainActivity.this,
+						listMap, R.layout.listview_item, 
+						new String[]{"ID", "EPC", "COUNT"}, 
+						new int[]{R.id.textView_id, R.id.textView_epc, R.id.textView_count}));
+			}
+		});
+	}
 		
 	//设置按钮是否可用
 	private void setButtonClickable(Button button, boolean flag){
@@ -362,19 +298,10 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 			
 			clearData();
 			break;
-		case R.id.btn_take_picture:
-			if (!takePictureFlag) {
-				if (camera != null) {  
-					camera.takePicture(null, null, new MyPictureCallback());
-					btnTakePicture.setText("重拍");
-					takePictureFlag = true;	//拍照标记
-				}
-			} else {
-				FileHandle.deleteFile(picPath); //先清除上一张照片的缓存
-				camera.startPreview(); // 重新开始预览  
-				btnTakePicture.setText("拍照");
-				takePictureFlag = false;	//拍照标记
-			}
+		case R.id.btn_next_main:
+			Intent intent = new Intent(MainActivity.this, CameraActivity.class);
+			startActivity(intent);
+			break;
 		default:
 			break;
 		}
@@ -448,92 +375,4 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 		}
 	}
 	
-	// 提供一个静态方法，用于根据手机方向获得相机预览画面旋转的角度  
-    public static int getPreviewDegree(Activity activity) {  
-        // 获得手机的方向  
-        int rotation = activity.getWindowManager().getDefaultDisplay()  
-                .getRotation();  
-        int degree = 0;  
-        // 根据手机的方向计算相机预览画面应该选择的角度  
-        switch (rotation) {  
-        case Surface.ROTATION_0:  
-            degree = 90;  
-            break;  
-        case Surface.ROTATION_90:  
-            degree = 0;  
-            break;  
-        case Surface.ROTATION_180:  
-            degree = 270;  
-            break;  
-        case Surface.ROTATION_270:  
-            degree = 180;  
-            break;  
-        }  
-        return degree;  
-    }  
-    
-	private final class SurfaceCallback implements Callback {  
-		  
-        // 拍照状态变化时调用该方法  
-        @Override  
-        public void surfaceChanged(SurfaceHolder holder, int format, int width,  
-                int height) {  
-            parameters = camera.getParameters(); // 获取各项参数  
-            parameters.setPictureFormat(PixelFormat.JPEG); // 设置图片格式  
-            parameters.setPreviewSize(width, height); // 设置预览大小  
-            parameters.setPreviewFrameRate(5);  //设置每秒显示4帧  
-            parameters.setPictureSize(width, height); // 设置保存的图片尺寸  
-            parameters.setJpegQuality(80); // 设置照片质量  
-//            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-              
-//            //查看可用的照片质量
-//            List<Size> supportedPreviewSizes = parameters.getSupportedPreviewSizes(); 
-//            List<Size> supportedPictureSizes = parameters.getSupportedPictureSizes();
-//            String supportedPreviewSizesNum = "";
-//            for(int i = 0; i < supportedPreviewSizes.size(); i++) {
-//            	supportedPreviewSizesNum += supportedPreviewSizes.get(i).height + "*" + supportedPreviewSizes.get(i).width + "  ";
-//            }
-//            Log.d(TAG, supportedPreviewSizesNum);
-        }  
-  
-        // 开始拍照时调用该方法  
-        @Override  
-        public void surfaceCreated(SurfaceHolder holder) {  
-            try {  
-                camera = Camera.open(); // 打开摄像头  
-                camera.setPreviewDisplay(holder); // 设置用于显示拍照影像的SurfaceHolder对象  
-                camera.setDisplayOrientation(getPreviewDegree(MainActivity.this));  //根据手机方向设置照片角度
-                camera.startPreview(); // 开始预览  
-            } catch (Exception e) {  
-                e.printStackTrace();  
-            }  
-  
-        }  
-  
-        // 停止拍照时调用该方法  
-        @Override  
-        public void surfaceDestroyed(SurfaceHolder holder) {  
-            if (camera != null) {  
-                camera.release(); // 释放照相机  
-                camera = null;  
-            }  
-        }  
-    }  
-	
-    private final class MyPictureCallback implements PictureCallback {  
-    	  
-        @Override  
-        public void onPictureTaken(byte[] data, Camera camera) {  
-            try {  
-                bundle = new Bundle();  
-                bundle.putByteArray("bytes", data); //将图片字节数据保存在bundle当中，实现数据交换
-                picPath = FileHandle.saveToCache(data, getApplicationContext()); // 保存图片cache中  
-                Toast.makeText(getApplicationContext(), "保存到：" + picPath, Toast.LENGTH_SHORT).show();
-//                camera.startPreview(); // 拍完照后，重新开始预览  
-  
-            } catch (Exception e) {  
-                e.printStackTrace();  
-            }  
-        }  
-    }  
 }
