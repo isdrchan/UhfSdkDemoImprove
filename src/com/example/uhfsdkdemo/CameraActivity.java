@@ -1,6 +1,7 @@
 package com.example.uhfsdkdemo;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
@@ -24,9 +25,10 @@ public class CameraActivity extends Activity implements OnClickListener{
 	private Camera camera; 
 	private Camera.Parameters parameters = null;  
 	private Bundle bundle = null; // 声明一个Bundle对象，用来存储数据  
+	private Bundle picPathBundle;
 	private String picPath;
 	private AutoFocusCallback myAutoFocusCallback = null;	//自动变焦回调
-	private boolean takePictureFlag = false;	//Camera.startPreview()之后，拍照Camera.takePicture()之前标记为flase0
+	private boolean takePictureFlag = false;	//Camera.startPreview()之后，拍照Camera.takePicture()之前标记为flase
 	private static final String TAG = "cyn";
 	
 	@Override
@@ -129,8 +131,14 @@ public class CameraActivity extends Activity implements OnClickListener{
                 bundle.putByteArray("bytes", data); //将图片字节数据保存在bundle当中，实现数据交换
                 picPath = FileUtil.saveToCache(data, getApplicationContext()); // 保存图片cache中  
                 Toast.makeText(getApplicationContext(), "保存到：" + picPath, Toast.LENGTH_SHORT).show();
-//                camera.startPreview(); // 拍完照后，重新开始预览  
-  
+//                camera.startPreview(); // 拍完照后，重新开始预览
+                
+                //跳转到uploadactivity
+                picPathBundle = new Bundle();
+    			Intent intent = new Intent(CameraActivity.this, UploadActivity.class);
+    			picPathBundle.putString("picPath", picPath);
+    			intent.putExtras(picPathBundle);
+    			startActivity(intent);
             } catch (Exception e) {  
                 e.printStackTrace();  
             }  
@@ -177,19 +185,21 @@ public class CameraActivity extends Activity implements OnClickListener{
 			break;
 			
 		case R.id.btn_take_picture_and_next_camera:
-			if (!takePictureFlag) {
-				if (camera != null) {  
-					camera.takePicture(null, null, new MyPictureCallback());
-					btnTakePictureAndNext.setText("下一步");
-					btnBack.setText("重新拍照");
-					takePictureFlag = true;	//拍照标记
-				}
-			} else {
-				FileUtil.deleteFile(picPath); //先清除上一张照片的缓存
-				camera.startPreview(); // 重新开始预览  
-				btnTakePictureAndNext.setText("拍照");
-				takePictureFlag = false;	//拍照标记
-			}
+//			if (!takePictureFlag) {
+//				if (camera != null) {  
+//					camera.takePicture(null, null, new MyPictureCallback());
+//					btnTakePictureAndNext.setText("下一步");
+//					btnBack.setText("重新拍照");
+//					takePictureFlag = true;	//拍照标记
+//					
+//				}
+//			} else {
+//				FileUtil.deleteFile(picPath); //先清除上一张照片的缓存
+//				camera.startPreview(); // 重新开始预览  
+//				btnTakePictureAndNext.setText("拍照");
+//				takePictureFlag = false;	//拍照标记
+//			}
+			camera.takePicture(null, null, new MyPictureCallback());
 			break;
 			
 		case R.id.surfaceView:

@@ -24,6 +24,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +47,7 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 	private boolean connectFlag = false;
 	private UhfReader reader ; //超高频读写器 
 	private ScreenStateReceiver screenReceiver;
+	private int[] itemClickTime = new int[]{-1, 0};	//标记item的点击次数
 	private static final String TAG = "cyn";
 	
 	@Override
@@ -195,21 +197,32 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 					}
 				}
 				//将数据添加到ListView
-				listMap = new ArrayList<Map<String,Object>>();
+//				listMap = new ArrayList<Map<String,Object>>();
+//				int idcount = 1;
+//				for(EPC epcdata:list){
+//					Map<String, Object> map = new HashMap<String, Object>();
+//					map.put("ID", idcount);
+//					map.put("EPC", epcdata.getEpc());
+//					map.put("COUNT", epcdata.getCount());
+//					idcount++;
+//					listMap.add(map);
+//				}
+//				listViewData.setAdapter(
+//						new SimpleAdapter(MainActivity.this,
+//						listMap, R.layout.listview_item, 
+//						new String[]{"ID", "EPC", "COUNT"}, 
+//						new int[]{R.id.textView_id, R.id.textView_epc, R.id.textView_count}
+//				));
+				
+				//将数据添加到ListView
 				int idcount = 1;
 				for(EPC epcdata:list){
-					Map<String, Object> map = new HashMap<String, Object>();
-					map.put("ID", idcount);
-					map.put("EPC", epcdata.getEpc());
-					map.put("COUNT", epcdata.getCount());
+					epcdata.setId(idcount);
 					idcount++;
-					listMap.add(map);
 				}
-				listViewData.setAdapter(
-						new SimpleAdapter(MainActivity.this,
-						listMap, R.layout.listview_item, 
-						new String[]{"ID", "EPC", "COUNT"}, 
-						new int[]{R.id.textView_id, R.id.textView_epc, R.id.textView_count}));
+				ListViewAdapter listViewAdapter = new ListViewAdapter(MainActivity.this, list);
+				listViewData.setAdapter(listViewAdapter);
+				
 			}
 		});
 	}
@@ -314,15 +327,38 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 	
 	@Override
 	public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-		TextView epcTextview = (TextView) view.findViewById(R.id.textView_epc);
-		String epc = epcTextview.getText().toString();
-		//选择EPC
-//		reader.selectEPC(Tools.HexString2Bytes(epc));
+//		TextView epcTextview = (TextView) view.findViewById(R.id.textView_epc);
+//		String epc = epcTextview.getText().toString();
+//		//选择EPC
+////		reader.selectEPC(Tools.HexString2Bytes(epc));
+//		Toast.makeText(getApplicationContext(), epc, 0).show();
+//		Intent intent = new Intent(this, MoreHandleActivity.class);
+//		intent.putExtra("epc", epc);
+//		startActivity(intent);
 		
-		Toast.makeText(getApplicationContext(), epc, 0).show();
-		Intent intent = new Intent(this, MoreHandleActivity.class);
-		intent.putExtra("epc", epc);
-		startActivity(intent);
+		//触发radioButton的点击事件
+		RadioButton radio= (RadioButton) view.findViewById(R.id.rb);
+		radio.performClick();
+		
+		//点击两次进入MoreHandleActivity
+		if(itemClickTime[0] == position) {
+			itemClickTime[1] += 1; 
+		} else {
+			itemClickTime[0] = position;
+			itemClickTime[1] = 1;
+		}
+		if(itemClickTime[1] == 2) {
+			itemClickTime[1] = 0;	//计数器置0
+			TextView epcTextview = (TextView) view.findViewById(R.id.textView_epc);
+			String epc = epcTextview.getText().toString();
+			Toast.makeText(getApplicationContext(), "epc: " + epc, 0).show();
+			Intent intent = new Intent(this, MoreHandleActivity.class);
+			intent.putExtra("epc", epc);
+			startActivity(intent);
+		} else {
+			Toast.makeText(getApplicationContext(), "再点一次进入MoreHandleActivity", 0).show();
+		}
+		
 	}
 	
 	@Override
