@@ -1,5 +1,6 @@
 package com.example.uhfsdkdemo;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import android.graphics.Bitmap;
@@ -35,6 +36,7 @@ public class BitmapUtil {
         }
         return degree;
     }
+    
    /*
     * Ðý×ªÍ¼Æ¬ 
     * @param angle 
@@ -59,4 +61,10 @@ public class BitmapUtil {
             return null;
         }
     }
+   
+	public static byte[] Bitmap2Bytes(Bitmap bm) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+		return baos.toByteArray();
+   }
 }

@@ -1,6 +1,7 @@
 package com.example.uhfsdkdemo;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
@@ -28,6 +29,7 @@ public class CameraActivity extends Activity implements OnClickListener{
 	private Bundle picPathBundle;
 	private String picPath;
 	private AutoFocusCallback myAutoFocusCallback = null;	//自动变焦回调
+	private ProgressDialog progressDialog;
 	private boolean takePictureFlag = false;	//Camera.startPreview()之后，拍照Camera.takePicture()之前标记为flase
 	private static final String TAG = "cyn";
 	
@@ -130,7 +132,8 @@ public class CameraActivity extends Activity implements OnClickListener{
                 bundle = new Bundle();  
                 bundle.putByteArray("bytes", data); //将图片字节数据保存在bundle当中，实现数据交换
                 picPath = FileUtil.saveToCache(data, getApplicationContext()); // 保存图片cache中  
-                Toast.makeText(getApplicationContext(), "保存到：" + picPath, Toast.LENGTH_SHORT).show();
+                
+//                Toast.makeText(getApplicationContext(), "保存到：" + picPath, Toast.LENGTH_SHORT).show();
 //                camera.startPreview(); // 拍完照后，重新开始预览
                 
                 //跳转到uploadactivity
@@ -139,6 +142,8 @@ public class CameraActivity extends Activity implements OnClickListener{
     			picPathBundle.putString("picPath", picPath);
     			intent.putExtras(picPathBundle);
     			startActivity(intent);
+    			progressDialog.dismiss();
+    			finish();
             } catch (Exception e) {  
                 e.printStackTrace();  
             }  
@@ -173,15 +178,16 @@ public class CameraActivity extends Activity implements OnClickListener{
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btn_back_camera:
-			if(!takePictureFlag) {
-				finish();
-			} else {
-				FileUtil.deleteFile(picPath); //先清除上一张照片的缓存
-				camera.startPreview(); // 重新开始预览  
-				btnTakePictureAndNext.setText("拍照");
-				takePictureFlag = false;	//拍照标记
-				btnBack.setText("上一步");
-			}
+//			if(!takePictureFlag) {
+//				finish();
+//			} else {
+//				FileUtil.deleteFile(picPath); //先清除上一张照片的缓存
+//				camera.startPreview(); // 重新开始预览  
+//				btnTakePictureAndNext.setText("拍照");
+//				takePictureFlag = false;	//拍照标记
+//				btnBack.setText("上一步");
+//			}
+			finish();
 			break;
 			
 		case R.id.btn_take_picture_and_next_camera:
@@ -199,6 +205,7 @@ public class CameraActivity extends Activity implements OnClickListener{
 //				btnTakePictureAndNext.setText("拍照");
 //				takePictureFlag = false;	//拍照标记
 //			}
+			progressDialog = ProgressDialog.show(this, null, "正在处理", false, true);
 			camera.takePicture(null, null, new MyPictureCallback());
 			break;
 			

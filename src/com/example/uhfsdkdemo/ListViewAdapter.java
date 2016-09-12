@@ -60,7 +60,7 @@ public class ListViewAdapter extends BaseAdapter {
 		tvCount = (TextView) convertView.findViewById(R.id.textView_count);
 		tvId.setText(epcList.get(position).getId() + "");
 		tvEPC.setText(epcList.get(position).getEpc());
-		tvCount.setText(epcList.get(position).getId() + "");
+		tvCount.setText(epcList.get(position).getCount() + "");
 				
 		//当RadioButton被选中时，将其状态记录进States中，并更新其他RadioButton的状态使它们不被选中 
 		final RadioButton radio= (RadioButton) convertView.findViewById(R.id.rb);

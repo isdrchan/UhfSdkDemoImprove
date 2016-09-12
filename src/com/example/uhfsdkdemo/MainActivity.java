@@ -404,8 +404,7 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 			Field menuKeyField = ViewConfiguration.class
 					.getDeclaredField("sHasPermanentMenuKey");
 			menuKeyField.setAccessible(true);
-			menuKeyField.setBoolean(config, false);
-			
+			menuKeyField.setBoolean(config, false);	
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

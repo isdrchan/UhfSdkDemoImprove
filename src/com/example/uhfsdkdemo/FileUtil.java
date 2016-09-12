@@ -1,5 +1,6 @@
 package com.example.uhfsdkdemo;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
 public class FileUtil {
 	
@@ -17,6 +19,7 @@ public class FileUtil {
      */  
     public static String saveToCache(byte[] data, Context context) throws IOException {  
         Date date = new Date();  
+        
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss"); // 格式化时间  
         String filename = format.format(date) + ".jpg";  
 //        File fileFolder = new File(Environment.getExternalStorageDirectory()  
@@ -27,10 +30,22 @@ public class FileUtil {
         if (!cachedir.exists()) { // 如果目录不存在，则创建一个名为"pic"的目录  
         	cachedir.mkdir();  
         }  
+        
+        //DataSaveToCache
+//        File jpgFile = new File(cachedir, filename);
+//        FileOutputStream outputStream = new FileOutputStream(jpgFile); // 文件输出流  
+//        outputStream.write(data); // 写入Cache中  
+//        outputStream.close(); // 关闭输出流  
+        
+        //转换到bitmap，旋转90度，再输出到文件
+        Bitmap bitmap = BitmapUtil.Bytes2Bitmap(data);
         File jpgFile = new File(cachedir, filename);
-        FileOutputStream outputStream = new FileOutputStream(jpgFile); // 文件输出流  
-        outputStream.write(data); // 写入Cache中  
-        outputStream.close(); // 关闭输出流  
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(jpgFile));    
+        bitmap = BitmapUtil.rotaingImageView(90, bitmap);  //把图片旋转为正的方向 
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, bos);
+        bos.flush();    
+        bos.close(); 
+        
         return context.getCacheDir().getAbsolutePath() + "/pic/" + filename;
     }  
     
