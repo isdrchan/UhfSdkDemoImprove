@@ -105,9 +105,9 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 		Util.initSoundPool(this);
 		        
 		//¼ÙÊý¾Ý
-	    List<EPC> list = new ArrayList<EPC>();
-	    list.add(new EPC(1, "1234567890", 1));
-	    addToList(list, "1");
+//	    List<EPC> list = new ArrayList<EPC>();
+//	    list.add(new EPC(1, "1234567890", 1));
+//	    addToList(list, "1");
 	}
 	
 	private void initView(){

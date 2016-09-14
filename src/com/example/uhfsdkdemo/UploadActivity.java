@@ -1,7 +1,7 @@
 package com.example.uhfsdkdemo;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -18,15 +18,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.okhttp.Call;
-import com.squareup.okhttp.Headers;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.MultipartBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
-
 public class UploadActivity extends Activity implements OnClickListener{
 	
 	private ImageView imageView;
@@ -37,6 +28,7 @@ public class UploadActivity extends Activity implements OnClickListener{
 	private Bundle bundle;
 	private String picPath;
 	private Bitmap bitmap;
+	private final String POST_URL = "http://192.168.1.161/epc/"; 
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,29 +55,29 @@ public class UploadActivity extends Activity implements OnClickListener{
 		
 	}
 	
-	private Response postRequest() throws IOException {
-		File file = new File(picPath);
-		OkHttpClient mOkHttpClient = new OkHttpClient();
-		RequestBody fileBody = RequestBody.create(MediaType.parse("application/octet-stream"), file);
-		RequestBody requestBody = new MultipartBuilder()
-		     .type(MultipartBuilder.FORM)
-		     .addPart(Headers.of(
-		          "Content-Disposition", 
-		              "form-data; name=\"epc\""), 
-		          RequestBody.create(null, Data.getChooseEPC()))
-		     .addPart(Headers.of(
-		         "Content-Disposition", 
-		         "form-data; name=\"mFile\";filename=\"" + Data.getChooseEPC() + ".jpg\""), fileBody)
-		     .build();
-		Request request = new Request.Builder()
-		    .url("http://baidu.com")
-		    .post(requestBody)
-		    .build();
-
-		Call call = mOkHttpClient.newCall(request);
-		Response response = call.execute();
-		return response;
-	}
+//	private Response postRequest() throws IOException {
+//		File file = new File(picPath);
+//		OkHttpClient mOkHttpClient = new OkHttpClient();
+//		RequestBody fileBody = RequestBody.create(MediaType.parse("application/octet-stream"), file);
+////		RequestBody requestBody = new MultipartBuilder()
+////		     .type(MultipartBuilder.FORM)
+////		     .addPart(Headers.of(
+////		          "Content-Disposition", 
+////		              "form-data; name=\"epc\""), 
+////		          RequestBody.create(null, Data.getChooseEPC()))
+////		     .addPart(Headers.of(
+////		         "Content-Disposition", 
+////		         "form-data; name=\"mFile\";filename=\"" + Data.getChooseEPC() + ".jpg\""), fileBody)
+////		     .build();
+//		Request request = new Request.Builder()
+//		    .url("http://192.168.1.161/epc/")
+////		    .post(requestBody)
+//		    .build();
+//
+//		Call call = mOkHttpClient.newCall(request);
+//		Response response = call.execute();
+//		return response;
+//	}
 
 	@Override
 	public void onClick(View v) {
@@ -110,7 +102,7 @@ public class UploadActivity extends Activity implements OnClickListener{
 		}
 	}
 	
-	private class UploadAsyncTask extends AsyncTask<Void, Void, Response> {
+	private class UploadAsyncTask extends AsyncTask<Void, Void, String> {
 		
 		@Override
 		protected void onPreExecute() {
@@ -118,28 +110,37 @@ public class UploadActivity extends Activity implements OnClickListener{
 		}
 		
 		@Override
-		protected Response doInBackground(Void... params) {
-			try {
-				Response response = postRequest();
-				return response;
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return null;
+		protected String doInBackground(Void... params) {
+//			try {
+//				Response response = postRequest();
+//				return response;
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//			List<BasicNameValuePair> params2 = new LinkedList<BasicNameValuePair>();
+//            params2.add(new BasicNameValuePair("epc", "111"));
+//            String jsonString = HttpRequestUtil.postRequest("http://192.168.1.161/epc/", params2);
+			Map<String, String> paramsMap = new HashMap<String, String>();
+			paramsMap.put("epc", Data.getChooseEPC());
+			Map<String, String> fileMap = new HashMap<String, String>();  
+			fileMap.put("pic", picPath);
+			String jsonString = HttpRequestUtil.postRequestWithFile(POST_URL, paramsMap, fileMap);
+			return jsonString;
 		}
 		
 		@Override
-		protected void onPostExecute(Response result) {
+		protected void onPostExecute(String result) {
 			super.onPostExecute(result);
 			String resultString = null;
 			try {
-				resultString = result.body().string();
+				resultString = result;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			if(resultString != null) {
 				progressDialog.dismiss();
 				Toast.makeText(getApplicationContext(), "上传成功", Toast.LENGTH_SHORT).show();
+				Log.d("cyn", resultString + "1");
 				finish();
 			}
 		}
