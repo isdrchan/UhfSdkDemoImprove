@@ -4,11 +4,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
     
-    <SurfaceView
-        android:id="@+id/surfaceView"
+    <LinearLayout 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1" />
+        android:layout_weight="1" >
+	    <ListView 
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:id="@+id/lv_history"
+	        ></ListView>
+    </LinearLayout>
     
     <LinearLayout 
         android:layout_width="match_parent"
@@ -16,20 +21,22 @@
         android:orientation="horizontal" >
         
         <Button 
-            android:id="@+id/btn_back_camera"
+            android:id="@+id/btn_back_history"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="返回" />
+            android:text="返回" /> 
         
         <Button 
-            android:id="@+id/btn_take_picture_and_next_camera"
+            android:id="@+id/btn_clean_history"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="拍照" />
+            android:text="清除缓存" />
         
 
     </LinearLayout>
+    
+    
 
 </LinearLayout>

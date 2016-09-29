@@ -36,6 +36,7 @@
     	<activity android:name="com.example.uhfsdkdemo.SettingPower"   android:launchMode="singleTask" />
     	<activity android:name="CameraActivity"></activity>
     	<activity android:name="UploadActivity"></activity>
+    	<activity android:name=".history.HistoryActivity"></activity>
     </application>
 
 </manifest>

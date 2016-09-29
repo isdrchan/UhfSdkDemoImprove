@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="5dp" >
+    
+    <LinearLayout 
+        android:layout_width="wrap_content"
+		android:layout_height="wrap_content" >
+		
+		<ImageView 
+		    android:id="@+id/imgv_history"
+		    android:layout_width="60dp"
+		    android:layout_height="70dp"
+		    android:src="@drawable/uhf_launcher" />
+        
+    </LinearLayout>
+		
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical" >
+		
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            
+           	<TextView 
+           	    android:layout_width="wrap_content"
+           	    android:layout_height="wrap_content"
+           	    android:text="EPC："
+           	    android:textStyle="bold"/>
+           	
+           	<TextView 
+           	    android:id="@+id/tv_epc_history"
+           	    android:layout_width="wrap_content"
+           	    android:layout_height="wrap_content"
+           	    android:text="Loading..."/>
+        </LinearLayout>
+        
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+           	
+            <TextView 
+           	    android:layout_width="wrap_content"
+           	    android:layout_height="wrap_content"
+           	    android:text="提交时间："
+           	    android:textStyle="bold"/>
+           	
+           	<TextView 
+           	    android:id="@+id/tv_time_history"
+           	    android:layout_width="wrap_content"
+           	    android:layout_height="wrap_content"
+           	    android:text="Loading..."/>
+            
+        </LinearLayout>
+        
+    </LinearLayout>
+
+   
+
+</LinearLayout>

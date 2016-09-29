@@ -18,6 +18,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.uhfsdkdemo.history.DBEPC;
+import com.example.uhfsdkdemo.history.DateUtils;
+import com.example.uhfsdkdemo.history.UHFDBManager;
+
 public class UploadActivity extends Activity implements OnClickListener{
 	
 	private ImageView imageView;
@@ -28,7 +32,7 @@ public class UploadActivity extends Activity implements OnClickListener{
 	private Bundle bundle;
 	private String picPath;
 	private Bitmap bitmap;
-	private final String POST_URL = "http://192.168.1.161/epc/"; 
+	private final String POST_URL = "http://192.168.1.156:9090/upload/"; 
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -104,9 +108,12 @@ public class UploadActivity extends Activity implements OnClickListener{
 	
 	private class UploadAsyncTask extends AsyncTask<Void, Void, String> {
 		
+		private UHFDBManager uhfDBManager;
+		
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
+			uhfDBManager = new UHFDBManager(UploadActivity.this);
 		}
 		
 		@Override
@@ -141,6 +148,11 @@ public class UploadActivity extends Activity implements OnClickListener{
 				progressDialog.dismiss();
 				Toast.makeText(getApplicationContext(), "上传成功", Toast.LENGTH_SHORT).show();
 				Log.d("cyn", resultString + "1");
+				
+				//上传成功写入数据库
+				uhfDBManager.add(new DBEPC(Data.getChooseEPC(), picPath, DateUtils.getCurrentTimestamp()));
+				uhfDBManager.closeDB();
+				
 				finish();
 			}
 		}

@@ -2,38 +2,77 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp"
+    android:paddingTop="5dp"
     android:orientation="vertical" >
     
-    <TextView 
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:text="图片" />
-    
-    <ImageView
-        android:id="@+id/imgv_upload"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
-    
     <LinearLayout 
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:background="@drawable/border"
+        android:orientation="vertical" >    
         
 	    <TextView 
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:textStyle="bold"
+	        android:layout_gravity="center_horizontal"
+	        android:textSize="20sp"
+	        android:text="确认提交信息" />
+    
+    </LinearLayout>
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@drawable/border"
+        android:orientation="horizontal" >
+        
+        <TextView 
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textStyle="bold"
+	        android:layout_marginLeft="5dp"
+	        android:layout_gravity="center_vertical"
 	        android:textSize="18sp"
-	        android:text="epc " />
+	        android:text="铭牌\n图片" />
+    
+	    <ImageView
+	        android:id="@+id/imgv_upload"
+	        android:layout_marginTop="5dp"
+	        android:layout_marginBottom="5dp"
+	        android:layout_marginLeft="-25dp"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" />
+        
+    </LinearLayout>
+    
+    
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_bottom"
+        android:orientation="horizontal" >
+        
+	    <TextView 
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="5dp"
+	        android:textStyle="bold"
+	        android:textSize="18sp"
+	        android:text="EPC" />
 	    
 	    <TextView 
 	        android:id="@+id/tv_epc_upload"
+	        android:layout_marginLeft="10sp"
+	        android:textSize="17sp"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="" />
+	        android:text="null" />
+	    
 	</LinearLayout>
     
     <LinearLayout 
@@ -46,14 +85,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="上一步"/>
+            android:text="返回"/>
         
         <Button 
             android:id="@+id/btn_upload_upload"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="上传"/>
+            android:text="提交"/>
         
 
     </LinearLayout>

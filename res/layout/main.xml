@@ -7,24 +7,48 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:visibility="gone"
         >
         <!--  style="?android:attr/buttonStyleSmall"-->
         <Button 
             android:id="@+id/button_connect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:text="@string/connect"/>
         <TextView android:id="@+id/textView_version"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             />
     </LinearLayout>
+    <LinearLayout 
+        android:id="@+id/linearlayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        
+        <TextView 
+            android:text="点击选择需要提交的EPC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            />
+        
+        <Button 
+            android:id="@+id/btn_history_main"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="提交记录" />
+    </LinearLayout>
 	<LinearLayout 
 	     android:id="@+id/receive_txt"
      	 android:layout_width="match_parent"
      	 android:layout_height="wrap_content"
      	 android:orientation="horizontal"
-     	 android:layout_below="@+id/linearlayout0"
+     	 android:layout_below="@+id/linearlayout1"
      	 android:layout_marginLeft="10dp"
      	 android:layout_marginTop="10dp"
 	    >
@@ -98,8 +122,9 @@
             android:id="@+id/btn_next_main"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="下一步" />
+            android:layout_weight="1.5"
+            android:enabled="false"
+            android:text="拍照" />
 
     </LinearLayout>
 

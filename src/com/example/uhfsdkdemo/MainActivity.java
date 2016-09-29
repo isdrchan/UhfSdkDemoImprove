@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import com.android.hdhe.uhf.reader.Tools;
 import com.android.hdhe.uhf.reader.UhfReader;
+import com.example.uhfsdkdemo.history.HistoryActivity;
 
 public class MainActivity extends Activity implements OnClickListener ,OnItemClickListener{
 
@@ -38,6 +39,7 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 	private Button buttonConnect;
 	private Button buttonStart;
 	private Button btnNext;
+	private Button btnHistory;
 	private TextView textVersion ;
 	private ListView listViewData;
 	private ArrayList<EPC> listEPC;
@@ -47,6 +49,7 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 	private boolean connectFlag = false;
 	private UhfReader reader ; //超高频读写器 
 	private ScreenStateReceiver screenReceiver;
+	private String actionBarTitle;
 	private int[] itemClickTime = new int[]{-1, 0};	//标记item的点击次数
 	private static final String TAG = "cyn";
 	
@@ -108,15 +111,23 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 //	    List<EPC> list = new ArrayList<EPC>();
 //	    list.add(new EPC(1, "1234567890", 1));
 //	    addToList(list, "1");
+		
+		//自动触发连接模块按钮事件
+	    buttonConnect.performClick();
+	    
+	    //自动触发扫描
+	    if(!startFlag) buttonStart.performClick();
 	}
 	
 	private void initView(){
+		actionBarTitle = "UHF(厂商)";
 		buttonStart = (Button) findViewById(R.id.button_start);
 		buttonConnect = (Button) findViewById(R.id.button_connect);
 		buttonClear = (Button) findViewById(R.id.button_clear);
 		btnNext = (Button) findViewById(R.id.btn_next_main);
 		listViewData = (ListView) findViewById(R.id.listView_data);
 		textVersion = (TextView) findViewById(R.id.textView_version);
+		btnHistory = (Button) findViewById(R.id.btn_history_main);
 		buttonStart.setOnClickListener(this);
 		buttonConnect.setOnClickListener(this);
 		buttonClear.setOnClickListener(this);
@@ -124,12 +135,21 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 		setButtonClickable(buttonStart, false);
 		listEPC = new ArrayList<EPC>();
 		listViewData.setOnItemClickListener(this);
+		btnHistory.setOnClickListener(this);
 	}
 	
 	@Override
 	protected void onPause() {
-		startFlag = false;
+//		startFlag = false;
 		super.onPause();
+		if(startFlag) buttonStart.performClick();
+	}
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		if(!startFlag) buttonStart.performClick();
 	}
 	
 	/**
@@ -149,8 +169,8 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 					epcList = reader.inventoryRealTime(); //实时盘存
 					if(epcList != null && !epcList.isEmpty()){
 						//播放提示音
-						Util.play(1, 0);
-						for(byte[] epc:epcList){
+//						Util.play(1, 0);
+						for(byte[] epc:epcList) {
 							String epcStr = Tools.Bytes2HexString(epc, epc.length);
 							addToList(listEPC, epcStr);
 						}
@@ -179,6 +199,8 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 					epcTag.setEpc(epc);
 					epcTag.setCount(1);
 					list.add(epcTag);
+					//第一次读到播放声音
+					Util.play(1, 0);
 				}else{
 					for(int i = 0; i < list.size(); i++){
 						EPC mEPC = list.get(i);
@@ -193,6 +215,8 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 						newEPC.setEpc(epc);
 						newEPC.setCount(1);
 						list.add(newEPC);
+						//第一次读到播放声音
+						Util.play(1, 0);
 						}
 					}
 				}
@@ -263,9 +287,11 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 			if(!startFlag){
 				startFlag = true ;
 				buttonStart.setText(R.string.stop_inventory);
+				getActionBar().setTitle(actionBarTitle + "        正在扫描...");
 			}else{
 				startFlag = false;
 				buttonStart.setText(R.string.inventory);
+				getActionBar().setTitle(actionBarTitle);
 			}
 			break;
 		case R.id.button_connect:
@@ -308,12 +334,18 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 //			}else{
 //				mixer = 0;
 //			}
-			
+			btnNext.setEnabled(false);	//设置下一步为不可用状态
 			clearData();
 			break;
+			
 		case R.id.btn_next_main:
 			Intent intent = new Intent(MainActivity.this, CameraActivity.class);
 			startActivity(intent);
+			break;
+			
+		case R.id.btn_history_main:
+			Intent historyIntent = new Intent(MainActivity.this, HistoryActivity.class);
+			startActivity(historyIntent);
 			break;
 		default:
 			break;
@@ -340,24 +372,27 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 		RadioButton radio= (RadioButton) view.findViewById(R.id.rb);
 		radio.performClick();
 		
-		//点击两次进入MoreHandleActivity
-		if(itemClickTime[0] == position) {
-			itemClickTime[1] += 1; 
-		} else {
-			itemClickTime[0] = position;
-			itemClickTime[1] = 1;
-		}
-		if(itemClickTime[1] == 2) {
-			itemClickTime[1] = 0;	//计数器置0
-			TextView epcTextview = (TextView) view.findViewById(R.id.textView_epc);
-			String epc = epcTextview.getText().toString();
-			Toast.makeText(getApplicationContext(), "epc: " + epc, 0).show();
-			Intent intent = new Intent(this, MoreHandleActivity.class);
-			intent.putExtra("epc", epc);
-			startActivity(intent);
-		} else {
-			Toast.makeText(getApplicationContext(), "再点一次进入MoreHandleActivity", 0).show();
-		}
+		//设置下一步为可用
+		btnNext.setEnabled(true);
+//		
+//		//点击两次进入MoreHandleActivity
+//		if(itemClickTime[0] == position) {
+//			itemClickTime[1] += 1; 
+//		} else {
+//			itemClickTime[0] = position;
+//			itemClickTime[1] = 1;
+//		}
+//		if(itemClickTime[1] == 2) {
+//			itemClickTime[1] = 0;	//计数器置0
+//			TextView epcTextview = (TextView) view.findViewById(R.id.textView_epc);
+//			String epc = epcTextview.getText().toString();
+//			Toast.makeText(getApplicationContext(), "epc: " + epc, 0).show();
+//			Intent intent = new Intent(this, MoreHandleActivity.class);
+//			intent.putExtra("epc", epc);
+//			startActivity(intent);
+//		} else {
+//			Toast.makeText(getApplicationContext(), "再点一次进入MoreHandleActivity", 0).show();
+//		}
 		
 	}
 	

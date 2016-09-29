@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">UHF测试程序</string>
+    <string name="app_name">UHF(厂商)</string>
     <string name="connect">连接模块</string>
     <string name="id">序号</string>
     <string name="count">次数</string>
-    <string name="inventory">开始盘存</string>
-     <string name="stop_inventory">停止盘存</string>
+    <string name="inventory">扫描</string>
+     <string name="stop_inventory">停止扫描</string>
     <string name="clear">清空</string>
     <string name="membank">数据区:</string>
 	<string name="accesspassword">访问密码:</string>

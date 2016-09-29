@@ -56,7 +56,5 @@ public class EPC {
 	public String toString() {
 		return "EPC [id=" + id + ", epc=" + epc + ", count=" + count + "]";
 	}
-	
-	
 
 }
