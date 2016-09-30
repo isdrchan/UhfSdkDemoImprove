@@ -96,9 +96,9 @@ public class UploadActivity extends Activity implements OnClickListener{
 			
 		case R.id.btn_upload_upload:
 			if(NetworkStateUtil.checkNetworkStateAndShowAlert(UploadActivity.this)) {
-				progressDialog = ProgressDialog.show(this, null, "正在上传", false, true);
+				progressDialog = ProgressDialog.show(this, null, "正在上传", false, false);
+				new UploadAsyncTask().execute();
 			}
-			new UploadAsyncTask().execute();
 			break;
 			
 		default:

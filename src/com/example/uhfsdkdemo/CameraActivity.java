@@ -73,7 +73,7 @@ public class CameraActivity extends Activity implements OnClickListener{
   		btnTakePictureAndNext.setOnClickListener(this);
 	    
 	    //Çå³ýÍ¼Æ¬»º´æ
-	    FileUtil.DeleteFolder(getCacheDir().getAbsolutePath() + "/pic"); 
+//	    FileUtil.DeleteFolder(getCacheDir().getAbsolutePath() + "/pic"); 
 	}
 	
 	private final class SurfaceCallback implements Callback {  

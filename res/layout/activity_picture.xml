@@ -2,18 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginTop="8dp"
     android:orientation="vertical" >
     
-    <LinearLayout 
+    <ImageView
+        android:id="@+id/imgv_picture"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1" >
-	    <ListView 
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:id="@+id/lv_history"
-	        ></ListView>
-    </LinearLayout>
+        android:layout_weight="1" />
     
     <LinearLayout 
         android:layout_width="match_parent"
@@ -21,22 +17,12 @@
         android:orientation="horizontal" >
         
         <Button 
-            android:id="@+id/btn_back_history"
+            android:id="@+id/btn_back_picture"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="返回" /> 
-        
-        <Button 
-            android:id="@+id/btn_clean_history"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="清除所有记录" />
-        
+            android:text="返回" />
 
     </LinearLayout>
-    
-    
 
 </LinearLayout>

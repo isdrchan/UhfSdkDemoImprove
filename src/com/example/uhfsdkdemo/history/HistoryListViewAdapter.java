@@ -13,6 +13,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.uhfsdkdemo.BitmapUtil;
 import com.example.uhfsdkdemo.R;
 
 public class HistoryListViewAdapter extends BaseAdapter {
@@ -58,10 +59,11 @@ public class HistoryListViewAdapter extends BaseAdapter {
 		}
 		
 		//加载图片
+		holder.imgv.setImageResource(R.drawable.uhf_launcher);	//如果没有图片
 		String picPath = dbEPCList.get(position).getPicPath();
 		File file = new File(dbEPCList.get(position).getPicPath());
 		if(file.exists()) {
-			bitmap = BitmapFactory.decodeFile(picPath);
+			bitmap = BitmapUtil.decodeSampledBitmapFromPath(picPath, 144, 172);
 			holder.imgv.setImageBitmap(bitmap);
 		}
 		holder.tvEPC.setText(dbEPCList.get(position).getEPC());

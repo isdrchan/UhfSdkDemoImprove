@@ -37,6 +37,7 @@
     	<activity android:name="CameraActivity"></activity>
     	<activity android:name="UploadActivity"></activity>
     	<activity android:name=".history.HistoryActivity"></activity>
+    	<activity android:name=".history.PictureActivity"></activity>
     </application>
 
 </manifest>

@@ -21,28 +21,29 @@
             android:layout_height="wrap_content"
             />
     </LinearLayout>
-    <LinearLayout 
+    <FrameLayout  
         android:id="@+id/linearlayout1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
         
-        <TextView 
-            android:text="点击选择需要提交的EPC"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_gravity="center_vertical"
+            android:paddingLeft="5dp"
+            android:text="点击选取需要提交的EPC"
             android:textSize="18sp"
-            android:textStyle="bold"
-            />
-        
-        <Button 
+            android:textStyle="bold" />
+
+        <Button
             android:id="@+id/btn_history_main"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:text="提交记录" />
-    </LinearLayout>
+            android:text="提交历史" />
+
+    </FrameLayout>
+    
 	<LinearLayout 
 	     android:id="@+id/receive_txt"
      	 android:layout_width="match_parent"

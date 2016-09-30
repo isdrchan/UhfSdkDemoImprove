@@ -3,6 +3,8 @@ package com.example.uhfsdkdemo.history;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.uhfsdkdemo.FileUtil;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -12,8 +14,10 @@ public class UHFDBManager {
 	
     private UHFDatabaseHelper helper;
     private SQLiteDatabase db;
+    private Context context;
     
     public UHFDBManager(Context context) {
+    	this.context = context;
     	helper = new UHFDatabaseHelper(context);
         db = helper.getWritableDatabase();
     }
@@ -41,12 +45,13 @@ public class UHFDBManager {
     	db.update(UHFDatabaseHelper.TABLE_NAME, cv, "epc=?", new String[] {dbEPC.getEPC()});
     }
     
-    public void delete(String epc) {
-    	db.delete(UHFDatabaseHelper.TABLE_NAME, "epc=?", new String[] {epc});
-    }
+//    public void delete(String epc) {
+//    	db.delete(UHFDatabaseHelper.TABLE_NAME, "epc=?", new String[] {epc});
+//    }
     
     public void deleteAll() {
     	db.delete(UHFDatabaseHelper.TABLE_NAME, null, null);
+    	FileUtil.DeleteFolder(context.getCacheDir().getAbsolutePath() + "/pic"); //Çå³ýËùÓÐÕÕÆ¬
     }
     
     /**
@@ -68,7 +73,7 @@ public class UHFDBManager {
     public List<DBEPC> selectAll() {
     	List<DBEPC> dbEPCList = new ArrayList<DBEPC>();
     	
-    	Cursor cursor = db.query(UHFDatabaseHelper.TABLE_NAME, null, null, null, null, null, null);
+    	Cursor cursor = db.query(UHFDatabaseHelper.TABLE_NAME, null, null, null, null, null, "time desc");
     	if(cursor != null) {
     		while(cursor.moveToNext()) {
     			DBEPC dbEPC = new DBEPC(
