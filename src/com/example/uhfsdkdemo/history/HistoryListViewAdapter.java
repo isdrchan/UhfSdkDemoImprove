@@ -63,7 +63,7 @@ public class HistoryListViewAdapter extends BaseAdapter {
 		String picPath = dbEPCList.get(position).getPicPath();
 		File file = new File(dbEPCList.get(position).getPicPath());
 		if(file.exists()) {
-			bitmap = BitmapUtil.decodeSampledBitmapFromPath(picPath, 144, 172);
+			bitmap = BitmapUtil.decodeSampledBitmapFromPath(picPath, 72, 88); //144, 176);
 			holder.imgv.setImageBitmap(bitmap);
 		}
 		holder.tvEPC.setText(dbEPCList.get(position).getEPC());

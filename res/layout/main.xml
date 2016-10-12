@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:paddingLeft="5dp"
+            android:paddingLeft="10dp"
             android:text="点击选取需要提交的EPC"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -50,8 +50,9 @@
      	 android:layout_height="wrap_content"
      	 android:orientation="horizontal"
      	 android:layout_below="@+id/linearlayout1"
-     	 android:layout_marginLeft="10dp"
+     	 android:layout_marginLeft="8dp"
      	 android:layout_marginTop="10dp"
+     	 android:layout_marginRight="5dp"
 	    >
 	  <TextView
      	 android:layout_width="0dp"
@@ -74,6 +75,7 @@
      	 android:layout_weight="1"
      	 android:gravity="center"
     	 android:text="@string/count"
+    	 android:visibility="gone"
     	 android:textSize="18sp" />
 	  	  	  
 	  	  <TextView
@@ -92,11 +94,25 @@
          android:layout_below="@+id/receive_txt"
          android:layout_marginLeft="2dp"
          android:layout_marginRight="2dp"
-         android:divider="#0a0f0b"
+         android:divider="#ffa8abad"
          android:dividerHeight="1dp"
          android:layout_above="@+id/linearLayout1"
          android:background="@drawable/corners_background"
          ></ListView>
+     
+     <TextView 
+        android:id="@+id/tv_listView_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="28sp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:layout_below="@+id/receive_txt"
+        android:layout_above="@+id/linearLayout1"
+        android:gravity="center_vertical|center_horizontal"
+        android:background="@drawable/corners_background"
+        android:alpha="0.3"
+        android:text="没有扫描到标签！" />
     
 
     <LinearLayout

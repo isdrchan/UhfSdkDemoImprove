@@ -3,7 +3,6 @@ package com.example.uhfsdkdemo;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,9 +24,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RadioButton;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.hdhe.uhf.reader.Tools;
 import com.android.hdhe.uhf.reader.UhfReader;
@@ -42,6 +39,7 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 	private Button btnHistory;
 	private TextView textVersion ;
 	private ListView listViewData;
+	private TextView tvListViewEmpty;
 	private ArrayList<EPC> listEPC;
 	private ArrayList<Map<String, Object>> listMap;
 	private boolean runFlag = true;
@@ -56,7 +54,7 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setOverflowShowingAlways();
+//		setOverflowShowingAlways(); //actionbar显示菜单
 		setContentView(R.layout.main);
 		initView();
 		//获取读写器实例，若返回Null,则串口初始化失败
@@ -128,6 +126,7 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 		listViewData = (ListView) findViewById(R.id.listView_data);
 		textVersion = (TextView) findViewById(R.id.textView_version);
 		btnHistory = (Button) findViewById(R.id.btn_history_main);
+		tvListViewEmpty = (TextView) findViewById(R.id.tv_listView_empty);
 		buttonStart.setOnClickListener(this);
 		buttonConnect.setOnClickListener(this);
 		buttonClear.setOnClickListener(this);
@@ -136,6 +135,9 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 		listEPC = new ArrayList<EPC>();
 		listViewData.setOnItemClickListener(this);
 		btnHistory.setOnClickListener(this);
+		
+		//listView为空显示提示信息
+		listViewData.setEmptyView(tvListViewEmpty);
 	}
 	
 	@Override
@@ -149,6 +151,11 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		//上传成功则清除listview记录
+		if(Data.getUploadFlag()) {
+			Data.setUploadFlag(false);
+			buttonClear.performClick();
+		}
 		if(!startFlag) buttonStart.performClick();
 	}
 	
@@ -200,7 +207,11 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 					epcTag.setCount(1);
 					list.add(epcTag);
 					//第一次读到播放声音
-					Util.play(1, 0);
+					Util.play(1, 2);
+					
+					//不计算count,epc更新才添加进列表
+					ListViewAdapter listViewAdapter = new ListViewAdapter(MainActivity.this, list);
+					listViewData.setAdapter(listViewAdapter);
 				}else{
 					for(int i = 0; i < list.size(); i++){
 						EPC mEPC = list.get(i);
@@ -210,13 +221,17 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 						list.set(i, mEPC);
 						break;
 					}else if(i == (list.size() - 1)){
-						//list中没有此epc
-						EPC newEPC = new EPC();
-						newEPC.setEpc(epc);
-						newEPC.setCount(1);
-						list.add(newEPC);
-						//第一次读到播放声音
-						Util.play(1, 0);
+							//list中没有此epc
+							EPC newEPC = new EPC();
+							newEPC.setEpc(epc);
+							newEPC.setCount(1);
+							list.add(newEPC);
+							//第一次读到播放声音
+							Util.play(1, 2);
+							
+							//不计算count,epc更新才添加进列表
+							ListViewAdapter listViewAdapter = new ListViewAdapter(MainActivity.this, list);
+							listViewData.setAdapter(listViewAdapter);
 						}
 					}
 				}
@@ -244,8 +259,8 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 					epcdata.setId(idcount);
 					idcount++;
 				}
-				ListViewAdapter listViewAdapter = new ListViewAdapter(MainActivity.this, list);
-				listViewData.setAdapter(listViewAdapter);
+//				ListViewAdapter listViewAdapter = new ListViewAdapter(MainActivity.this, list);
+//				listViewData.setAdapter(listViewAdapter);
 				
 			}
 		});
@@ -285,13 +300,13 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 		switch (v.getId()) {
 		case R.id.button_start:
 			if(!startFlag){
-				startFlag = true ;
+				startFlag = true;
 				buttonStart.setText(R.string.stop_inventory);
-				getActionBar().setTitle(actionBarTitle + "        正在扫描...");
+				getActionBar().setTitle(actionBarTitle + "          状态:正在扫描...");
 			}else{
 				startFlag = false;
 				buttonStart.setText(R.string.inventory);
-				getActionBar().setTitle(actionBarTitle);
+				getActionBar().setTitle(actionBarTitle + "          状态:停止");
 			}
 			break;
 		case R.id.button_connect:
@@ -427,7 +442,7 @@ public class MainActivity extends Activity implements OnClickListener ,OnItemCli
 				}
 			}
 		}
-	return super.onMenuOpened(featureId, menu);
+		return super.onMenuOpened(featureId, menu);
 	}
 	
 	/**

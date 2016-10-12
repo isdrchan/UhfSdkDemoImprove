@@ -11,9 +11,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
-import android.view.View;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
@@ -47,7 +47,7 @@ public class CameraActivity extends Activity implements OnClickListener{
 	            .findViewById(R.id.surfaceView);  
 	    surfaceView.getHolder()  
 	            .setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);  
-	    surfaceView.getHolder().setFixedSize(1280, 720); //设置Surface分辨率  
+	    surfaceView.getHolder().setFixedSize(1280, 720); //设置Surface分辨率  1280*720
 	    surfaceView.getHolder().setKeepScreenOn(true);// 屏幕常亮  
 	    surfaceView.getHolder().addCallback(new SurfaceCallback());//为SurfaceView的句柄添加一个回调函数
 	    
@@ -85,7 +85,9 @@ public class CameraActivity extends Activity implements OnClickListener{
             parameters = camera.getParameters(); // 获取各项参数  
             parameters.setPictureFormat(PixelFormat.JPEG); // 设置图片格式  
             parameters.setPreviewSize(width, height); // 设置预览大小  
+            Log.d(TAG, width + "  " + height);
             parameters.setPreviewFrameRate(5);  //设置每秒显示4帧  
+            
             parameters.setPictureSize(width, height); // 设置保存的图片尺寸  
             parameters.setJpegQuality(80); // 设置照片质量  
 //            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);

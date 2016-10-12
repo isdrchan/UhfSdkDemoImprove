@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,11 +29,12 @@ public class UploadActivity extends Activity implements OnClickListener{
 	private TextView tvEPC;
 	private Button btnBack;
 	private Button btnUpload;
+	private EditText et;
 	private ProgressDialog progressDialog;
 	private Bundle bundle;
 	private String picPath;
 	private Bitmap bitmap;
-	private final String POST_URL = "http://192.168.1.156:9090/upload/"; 
+	private final String POST_URL = "http://119.29.142.168/upload/"; 
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,7 @@ public class UploadActivity extends Activity implements OnClickListener{
 		tvEPC = (TextView) findViewById(R.id.tv_epc_upload);
 		btnBack = (Button) findViewById(R.id.btn_back_upload);
 		btnUpload = (Button) findViewById(R.id.btn_upload_upload);
+		et = (EditText) findViewById(R.id.et_upload);
 		
 		btnBack.setOnClickListener(this);
 		btnUpload.setOnClickListener(this);
@@ -127,10 +130,17 @@ public class UploadActivity extends Activity implements OnClickListener{
 //			List<BasicNameValuePair> params2 = new LinkedList<BasicNameValuePair>();
 //            params2.add(new BasicNameValuePair("epc", "111"));
 //            String jsonString = HttpRequestUtil.postRequest("http://192.168.1.161/epc/", params2);
+			
 			Map<String, String> paramsMap = new HashMap<String, String>();
 			paramsMap.put("epc", Data.getChooseEPC());
+			
+			String info = "";
+			info = et.getText().toString();
+//			if(info != "") //附加信息栏非空则添加进map
+			paramsMap.put("info", info);
 			Map<String, String> fileMap = new HashMap<String, String>();  
 			fileMap.put("pic", picPath);
+			
 			String jsonString = HttpRequestUtil.postRequestWithFile(POST_URL, paramsMap, fileMap);
 			return jsonString;
 		}
@@ -152,6 +162,9 @@ public class UploadActivity extends Activity implements OnClickListener{
 				//上传成功写入数据库
 				uhfDBManager.add(new DBEPC(Data.getChooseEPC(), picPath, DateUtils.getCurrentTimestamp()));
 				uhfDBManager.closeDB();
+				
+				//上传成功设置标记
+				Data.setUploadFlag(true);
 				
 				finish();
 			}

@@ -2,7 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:padding="10dp" >
+    android:paddingTop="5dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingBottom="5dp" >
     
       <TextView
         android:id="@+id/textView_id"
@@ -10,6 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="14sp"
         android:text=""
          />
 
@@ -17,10 +22,10 @@
         android:id="@+id/textView_epc"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="4"
+        android:layout_weight="7"
         android:gravity="center"
         android:text="barcode"
-        android:textSize="12sp"
+        android:textSize="14sp"
          />
 
     <TextView
@@ -28,6 +33,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:visibility="gone"
         android:text=""
         android:layout_weight="1" />
     

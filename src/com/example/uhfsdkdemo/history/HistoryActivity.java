@@ -3,7 +3,8 @@ package com.example.uhfsdkdemo.history;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -38,10 +39,11 @@ public class HistoryActivity extends Activity implements OnClickListener, OnItem
 		
 		historyListViewAdapter = new HistoryListViewAdapter(HistoryActivity.this, dbEPCList);
 		lv.setAdapter(historyListViewAdapter);
+		
+		getActionBar().setTitle("提交历史：" + dbEPCList.size() + "条记录");
 	}
 
 	private void initView() {
-		getActionBar().setTitle("提交历史");
 		lv = (ListView) findViewById(R.id.lv_history);
 		btnBack = (Button) findViewById(R.id.btn_back_history);
 		btnCleanCache = (Button) findViewById(R.id.btn_clean_history);
@@ -58,10 +60,20 @@ public class HistoryActivity extends Activity implements OnClickListener, OnItem
 			break;
 
 		case R.id.btn_clean_history:
-			uhfDBManager.deleteAll();
-			lv.setAdapter(null);
-			Toast.makeText(getApplicationContext(), "清除所有记录成功", Toast.LENGTH_SHORT).show();
-			finish();
+		 	new AlertDialog.Builder(HistoryActivity.this)
+		 	.setTitle("确定清除所有记录？")
+		 	.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					uhfDBManager.deleteAll();
+					lv.setAdapter(null);
+					Toast.makeText(getApplicationContext(), "成功清除所有记录", Toast.LENGTH_SHORT).show();
+					finish();
+				}
+			})
+		 	.setNegativeButton("取消", null)
+		 	.show();
 			break;
 			
 		default:

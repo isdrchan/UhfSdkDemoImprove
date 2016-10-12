@@ -50,11 +50,10 @@
     </LinearLayout>
     
     
-    
     <LinearLayout 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/border_bottom"
+        android:background="@drawable/border"
         android:orientation="horizontal" >
         
 	    <TextView 
@@ -72,6 +71,29 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:text="null" />
+	    
+	</LinearLayout>
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_bottom"
+        android:orientation="horizontal" >
+        
+	    <TextView 
+	        android:layout_width="wrap_content"
+	        android:layout_height="match_parent"
+	        android:layout_marginLeft="5dp"
+	        android:textStyle="bold"
+	        android:textSize="18sp"
+	        android:text="附加\n信息" />
+	    
+	    <EditText 
+	        android:id="@+id/et_upload"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:inputType="textMultiLine"
+	        android:hint="点击输入" />
 	    
 	</LinearLayout>
     

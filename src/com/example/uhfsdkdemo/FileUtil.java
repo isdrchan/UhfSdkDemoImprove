@@ -37,15 +37,33 @@ public class FileUtil {
 //        outputStream.write(data); // 写入Cache中  
 //        outputStream.close(); // 关闭输出流  
         
-        //转换到bitmap，旋转90度，再输出到文件
+        //转换到bitmap，旋转90度，压缩，再输出到文件
         Bitmap bitmap = BitmapUtil.Bytes2Bitmap(data);
         File jpgFile = new File(cachedir, filename);
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(jpgFile));    
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(jpgFile)); 
         bitmap = BitmapUtil.rotaingImageView(90, bitmap);  //把图片旋转为正的方向 
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, bos);
-        bos.flush();    
+        bitmap = BitmapUtil.compress(bitmap);	//像素压缩
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 60, bos);	//质量压缩
+        bos.flush();
         bos.close(); 
         
+//        //转换到bitmap，旋转90度，压缩，再输出到文件
+//        Bitmap bitmap = BitmapUtil.Bytes2Bitmap(data);
+//        bitmap = BitmapUtil.rotaingImageView(90, bitmap);  //把图片旋转为正的方向 
+//        File jpgFile = new File(cachedir, filename);
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        int options = 80;
+//        bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);
+//        while (baos.toByteArray().length / 1024 > 100) {   
+//            baos.reset();  
+//            options -= 10;  
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);  
+//        }     
+//        FileOutputStream fos = new FileOutputStream(jpgFile);
+//        fos.write(baos.toByteArray());
+//        fos.flush(); 
+//        fos.close();
+//        
         return context.getCacheDir().getAbsolutePath() + "/pic/" + filename;
     }  
     
